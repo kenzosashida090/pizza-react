@@ -1,6 +1,6 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom" // ROUTER
 import Home from "./ui/Home"
-import Menu from "./features/menu/Menu"
+import Menu, {loader as menuLoader} from "./features/menu/Menu"
 import Cart from "./features/cart/Cart"
 import CreateOrder from "./features/order/CreateOrder"
 import Order from "./features/order/Order"
@@ -17,7 +17,8 @@ const router = createBrowserRouter([
       },
       {
         path:"/menu",
-        element:<Menu/> // Loader is a react router function that fetch data and pass the data and render the componenrt
+        element:<Menu/>, 
+        loader:menuLoader// Loader is a react router function that fetch data and pass the data and render the componenrt
       },
       {
         path:"/cart",
