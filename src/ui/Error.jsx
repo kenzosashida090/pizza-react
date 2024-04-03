@@ -3,7 +3,7 @@ import { useNavigate, useRouteError } from 'react-router-dom';
 function NotFound() {
   const navigate = useNavigate();
   const error = useRouteError() //Returns an object with data of the error page like status:404 or the message
-
+console.log(error)
   return (
     <div>
       <h1>Something went wrong 😢</h1>
