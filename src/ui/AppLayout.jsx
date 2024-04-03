@@ -8,14 +8,16 @@ function AppLayout() {  //We use the AppLayout as the parent of all the routes, 
     const isLoading = navigation.state === "loading"
     
     return (
-        <div className="layout">
-            <SearchOrder/>
+        <div className="grid h-screen grid-rows-[auto_1fr_auto]">
+           
             {isLoading && <Loader/>}
             <Header/>{/* The applayout will have Header and Cart Overview static with nested routes */}
-            <main>
-                <h1>CONTENT</h1>
+            <div className="sm:overflow-hidden  overflow-scroll overflow-x-hidden ">
+            <main className="mx-auto max-w-3xl ">
+            {/* If there is no to mucho space for the components on main will scroll only that section */}    
                 <Outlet/>
             </main>
+            </div>
             <CartOverview/>
         </div>
     )
