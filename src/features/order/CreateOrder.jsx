@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Form, redirect, useActionData, useNavigation } from "react-router-dom";
 import { createOrder } from "../../services/apiRestaurant";
 import Button from "../../ui/Button";
-
+import {useSelector} from "react-redux"
 // https://uibakery.io/regex-library/phone-number
 const isValidPhone = (str) =>
   /^\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/.test(
@@ -40,7 +40,8 @@ function CreateOrder() {
   const formErrors = useActionData(); //If there is an error, this will return what ever the action fucntion resposne
   // in this case we use formErrros to display if there is an error
   const cart = fakeCart;
-  
+  const username = useSelector((state)=> state.user.username)
+
   return (
     <div className="px-4 py-6">
       <h2 className="text-xl font-semibold mb-8">Ready to order? Let's go!</h2>
@@ -48,7 +49,7 @@ function CreateOrder() {
       <Form method="POST">
         <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-center  ">
           <label className="sm:basis-40">First Name</label>
-          <input className="input grow" type="text" name="customer" required />
+          <input defaultValue={username} className="input grow" type="text" name="customer" required />
         </div>
 
         <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-center  " >
