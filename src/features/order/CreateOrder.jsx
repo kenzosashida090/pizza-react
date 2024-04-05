@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Form, redirect, useActionData, useNavigation } from "react-router-dom";
 import { createOrder } from "../../services/apiRestaurant";
+import Button from "../../ui/Button";
 
 // https://uibakery.io/regex-library/phone-number
 const isValidPhone = (str) =>
@@ -39,33 +40,33 @@ function CreateOrder() {
   const formErrors = useActionData(); //If there is an error, this will return what ever the action fucntion resposne
   // in this case we use formErrros to display if there is an error
   const cart = fakeCart;
-  console.log(formErrors)
+  
   return (
-    <div>
-      <h2>Ready to order? Let's go!</h2>
-
+    <div className="px-4 py-6">
+      <h2 className="text-xl font-semibold mb-8">Ready to order? Let's go!</h2>
+{/* NEVER USE WITH INSIDE A FLEX CONTAINER INSTEAD USE GROW, THE TWO OTHER INPUTS ARE NO LONGER INSIDE A FLEX CONTAINER */}
       <Form method="POST">
-        <div>
-          <label>First Name</label>
-          <input type="text" name="customer" required />
+        <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-center  ">
+          <label className="sm:basis-40">First Name</label>
+          <input className="input grow" type="text" name="customer" required />
         </div>
 
-        <div>
-          <label>Phone number</label>
-          <div>
-            <input type="tel" name="phone" required />
-          </div>
-          {formErrors?.phone && <p>{formErrors.phone}</p>}
-        </div>
-
-        <div>
-          <label>Address</label>
-          <div>
-            <input className="w-full rounded-full border-stone-200 px-3 py-2 text-sm transition-all duration-100 placeholder:text-stone-400 focus:ring focus:outline-none focus:ring-yellow-400" type="text" name="address" required />
+        <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-center  " >
+          <label className="sm:basis-40">Phone number</label>
+          <div className="grow relative ">
+            <input className="input w-full" type="tel" name="phone" required />
+          {formErrors?.phone && <p className="text-xs mt-2  text-red-500 ">{formErrors.phone}</p>}
           </div>
         </div>
 
-        <div>
+        <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-center "> 
+          <label className="sm:basis-40">Address</label>
+          <div className="grow">
+            <input className="input w-full" type="text" name="address" required />
+          </div>
+        </div>
+
+        <div className="mb-12 flex gap-4 items-center">
           <input
             type="checkbox"
             name="priority"
@@ -74,12 +75,12 @@ function CreateOrder() {
             // value={withPriority}
             // onChange={(e) => setWithPriority(e.target.checked)}
           />
-          <label htmlFor="priority">Want to yo give your order priority?</label>
+          <label className="font-medium" htmlFor="priority">Want to yo give your order priority?</label>
         </div>
 
         <div>
         <input type="hidden"  value={JSON.stringify(cart)} name="cart" />
-          <button className="inline-block  bg-yellow-400 py-3 px-4 font-semibold tracking-wide  uppercase  text-stone-800 transition-colors duration-500 focus:outline-none focus:ring focus:ring-yellow-300 focus:bg-yellow-300 focus:ring-offset-2 rounded-full hover:bg-yellow-300 " disabled={isSubmitting}>{ isSubmitting ? 'Placing order...':'Order now'}</button>
+          <Button type="primary" disabled={isSubmitting}>{ isSubmitting ? 'Placing order...':'Order now'}</Button>
           
         </div>
       </Form>
@@ -100,8 +101,9 @@ export async function action({request}){ // This  action will be trigger by the 
  }
  const errors = {}
 
- if(isValidPhone(order.phone)) errors.phone = "Please provide a correct phone number. We might need it to contact you"
- if(Object.keys(errors)>0) return errors
+ if(!isValidPhone(order.phone)) errors.phone = "Please provide a correct phone number. We might need it to contact you"
+ 
+ if(Object.keys(errors).length>0) return errors //if there is any error inside the object error will return the errors
  const newOrder = await createOrder(order);
   return redirect(`/order/${newOrder.id}`)  //all because we receive a request we need to return a resonse we make happend all the fetching here
 } 

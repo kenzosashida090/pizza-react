@@ -12,13 +12,15 @@ function AppLayout() {  //We use the AppLayout as the parent of all the routes, 
            
             {isLoading && <Loader/>}
             <Header/>{/* The applayout will have Header and Cart Overview static with nested routes */}
-            <div className="sm:overflow-hidden  overflow-scroll overflow-x-hidden ">
+            <div className=" overflow-x-hidden ">
             <main className="mx-auto max-w-3xl ">
             {/* If there is no to mucho space for the components on main will scroll only that section */}    
                 <Outlet/>
             </main>
             </div>
             <CartOverview/>
+            
+            
         </div>
     )
 }

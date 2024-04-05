@@ -5,7 +5,7 @@ function Menu() {
   //render as fetch happened at the same time. Instead of fetching data weith useEffect that first will render and after fetch the data, that creates a data waterfall
   const menu = useLoaderData() //Fetch the data that is associated into this page, in this case is the loader function set in the App routing definition
   console.log(menu)
-  return <ul>
+  return <ul className="divide-y divide-stone-200 px-2 ">
     {menu.map((pizza)=> <MenuItem pizza={pizza} key={pizza.id} />)}
   </ul>;
 }
