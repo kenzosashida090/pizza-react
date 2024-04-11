@@ -3,6 +3,10 @@ import { Form, redirect, useActionData, useNavigation } from "react-router-dom";
 import { createOrder } from "../../services/apiRestaurant";
 import Button from "../../ui/Button";
 import {useSelector} from "react-redux"
+import { clearCart, getCart, getTotalCartPrice } from "../cart/cartSlice";
+import EmptyCart from "../cart/EmptyCart";
+import store from "../../store"
+import {formatCurrency} from "../../utils/helpers"
 // https://uibakery.io/regex-library/phone-number
 const isValidPhone = (str) =>
   /^\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/.test(
@@ -34,18 +38,25 @@ const fakeCart = [
 ];
 
 function CreateOrder() {
-  // const [withPriority, setWithPriority] = useState(false);
+  const [withPriority, setWithPriority] = useState(false);
   const navigation = useNavigation()
   const isSubmitting = navigation.state === "submitting"
   const formErrors = useActionData(); //If there is an error, this will return what ever the action fucntion resposne
+  const totalCartPrice = useSelector(getTotalCartPrice)
+  const priorityPrice = withPriority ? (totalCartPrice * 0.20): 0
+   const totalPrice = totalCartPrice + priorityPrice;
   // in this case we use formErrros to display if there is an error
-  const cart = fakeCart;
-  const username = useSelector((state)=> state.user.username)
+ // const cart = fakeCart;
 
+  const cart = useSelector(getCart)
+  
+  const username = useSelector((state)=> state.user.username)
+  if(!cart.length)  return  <EmptyCart />
+  console.log(typeof withPriority)
   return (
     <div className="px-4 py-6">
       <h2 className="text-xl font-semibold mb-8">Ready to order? Let's go!</h2>
-{/* NEVER USE WITH INSIDE A FLEX CONTAINER INSTEAD USE GROW, THE TWO OTHER INPUTS ARE NO LONGER INSIDE A FLEX CONTAINER */}
+{/* NEVER USE WIDTH INSIDE A FLEX CONTAINER INSTEAD USE GROW, THE TWO OTHER INPUTS ARE NO LONGER INSIDE A FLEX CONTAINER */}
       <Form method="POST">
         <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-center  ">
           <label className="sm:basis-40">First Name</label>
@@ -73,15 +84,15 @@ function CreateOrder() {
             name="priority"
             id="priority"
             className="h-3 w-3 accent-yellow-400 focus:outline-none focus:ring focus:ring-yellow-400 focus:ring-offset-2"
-            // value={withPriority}
-            // onChange={(e) => setWithPriority(e.target.checked)}
+            value={withPriority}
+            onChange={(e) => setWithPriority(e.target.checked)}
           />
           <label className="font-medium" htmlFor="priority">Want to yo give your order priority?</label>
         </div>
 
         <div>
         <input type="hidden"  value={JSON.stringify(cart)} name="cart" />
-          <Button type="primary" disabled={isSubmitting}>{ isSubmitting ? 'Placing order...':'Order now'}</Button>
+          <Button type="primary" disabled={isSubmitting}>{ isSubmitting ? 'Placing order...':`Order now from ${formatCurrency(totalPrice)} `}</Button>
           
         </div>
       </Form>
@@ -92,12 +103,13 @@ function CreateOrder() {
 export async function action({request}){ // This  action will be trigger by the Form component provided by react-router
   //this function allows us to make Post, Update, Delete requests, configured on thje App.jsx file on the router options
  //This action will create a new order and the redirect to the order detailsr
-  const formData = await request.formData()
-  const data = Object.fromEntries(formData)
+ const formData = await request.formData()
+ const data = Object.fromEntries(formData)
+
  const order = {
   ...data,
   cart:JSON.parse(data.cart),
-  priority: data.priority === "on"
+  priority: data.priority === "true" // data.priority will be astring because it comes  from an HTML input which always sends strings
 
  }
  const errors = {}
@@ -106,7 +118,8 @@ export async function action({request}){ // This  action will be trigger by the 
  
  if(Object.keys(errors).length>0) return errors //if there is any error inside the object error will return the errors
  const newOrder = await createOrder(order);
-  return redirect(`/order/${newOrder.id}`)  //all because we receive a request we need to return a resonse we make happend all the fetching here
+ store.dispatch(clearCart()) // this is not recommended at all export the entire store into a single file
+ return redirect(`/order/${newOrder.id}`)  //all because we receive a request we need to return a resonse we make happend all the fetching here
 } 
 
 export default CreateOrder;
