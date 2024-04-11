@@ -9,6 +9,7 @@ import {
 } from "../../utils/helpers";
 import OrderItem from "./OrderItem";
 import { useEffect } from "react";
+import UpdateOrder from "./UpdateOrder";
 
 
 
@@ -51,7 +52,7 @@ function Order() {
         <p className="text-xs text-stone-500">(Estimated delivery: {formatDate(estimatedDelivery)})</p>
       </div>
             <ul className="divide-y divide-stone-200 border-b border-t">
-              {cart.map((item) => <OrderItem item={item} key={item.pizzaId} ingredients={fetcher.data?.find((el)=> el.id === item.pizzaId).ingredients ?? []}  isLoadingIngredients={fetcher.state === "loading"} />) }
+              {cart.map((item) => <OrderItem item={item} key={item.pizzaId} ingredients={fetcher?.data?.find((el)=> el.id === item.pizzaId).ingredients ?? []}  isLoadingIngredients={fetcher.state === "loading"} />) }
               {/* if there is not ingridients with the  ?? with dlecare an empty array to avoid errors of the join propetie */}
             </ul>
       <div className="space-y-2 bg-stone-200 py-5 px-6">
@@ -59,6 +60,7 @@ function Order() {
         {priority && <p className="text-sm font-medium text-stone-600">Price priority: {formatCurrency(priorityPrice)}</p>}
         <p className="font-bold">To pay on delivery: {formatCurrency(orderPrice + priorityPrice)}</p>
       </div>
+      {!priority && <UpdateOrder order={order} />}
     </div>
   );
 }
