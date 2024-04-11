@@ -1,4 +1,4 @@
-import { useState } from "react";
+import {  useState } from "react";
 import { Form, redirect, useActionData, useNavigation } from "react-router-dom";
 import { createOrder } from "../../services/apiRestaurant";
 import Button from "../../ui/Button";
@@ -52,7 +52,7 @@ function CreateOrder() {
  // const cart = fakeCart;
 
   const cart = useSelector(getCart)
-  
+ 
   const {username, status:addressStatus, position, address, error:errorAddress} = useSelector((state)=> state.user)
   if(!cart.length)  return  <EmptyCart />
 const isLoadingAddress = addressStatus === "loading"

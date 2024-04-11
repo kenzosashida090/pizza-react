@@ -1,6 +1,6 @@
 // Test ID: IIDSAT
 
-import { useLoaderData } from "react-router-dom";
+import { useFetcher, useLoaderData } from "react-router-dom";
 import { getOrder } from "../../services/apiRestaurant";
 import {
   calcMinutesLeft,
@@ -8,6 +8,7 @@ import {
   formatDate,
 } from "../../utils/helpers";
 import OrderItem from "./OrderItem";
+import { useEffect } from "react";
 
 
 
@@ -23,7 +24,12 @@ function Order() {
     estimatedDelivery,
     cart,
   } = order;
- 
+  const fetcher = useFetcher() // this hook allows us to retrieve data from  another route in this case the menu data.
+  useEffect(()=>{
+    if(!fetcher.data && fetcher.state === "idle") {
+      fetcher.load("/menu") //fetching the menu data from the /menu route
+    }
+  },[fetcher])
   const deliveryIn = calcMinutesLeft(estimatedDelivery);
   return (
     <div className="space-y-8 px-4 py-6">
@@ -45,7 +51,8 @@ function Order() {
         <p className="text-xs text-stone-500">(Estimated delivery: {formatDate(estimatedDelivery)})</p>
       </div>
             <ul className="divide-y divide-stone-200 border-b border-t">
-              {cart.map((item) => <OrderItem item={item} key={item.pizzaId}  />) }
+              {cart.map((item) => <OrderItem item={item} key={item.pizzaId} ingredients={fetcher.data?.find((el)=> el.id === item.pizzaId).ingredients ?? []}  isLoadingIngredients={fetcher.state === "loading"} />) }
+              {/* if there is not ingridients with the  ?? with dlecare an empty array to avoid errors of the join propetie */}
             </ul>
       <div className="space-y-2 bg-stone-200 py-5 px-6">
         <p className="text-sm font-medium text-stone-600">Price pizza: {formatCurrency(orderPrice)}</p>
