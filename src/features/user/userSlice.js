@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit' //Create the reducers \
 import {getAddress} from "../../services/apiGeocoding"
-import { status } from 'init';
 function getPosition() {
   return new Promise(function (resolve, reject) {
     navigator.geolocation.getCurrentPosition(resolve, reject);
@@ -46,7 +45,7 @@ const userSlice = createSlice({
     
   }).addCase(fetchAddress.rejected, (state,action)=>{
     state.status = "error" 
-    state.error = action.error.message})
+    state.error = "There was a problem getting your address. Make sure to fill this field"})
 })
 
 export const {updateName} = userSlice.actions //export the action to updateName
